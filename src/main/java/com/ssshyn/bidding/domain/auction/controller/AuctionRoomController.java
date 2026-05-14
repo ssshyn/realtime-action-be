@@ -5,14 +5,15 @@ import com.ssshyn.bidding.domain.auction.dto.AuctionRoomResponse;
 import com.ssshyn.bidding.domain.auction.dto.AuctionRoomUpdateRequest;
 import com.ssshyn.bidding.domain.auction.entity.AuctionStatus;
 import com.ssshyn.bidding.domain.auction.service.AuctionRoomService;
-import com.ssshyn.bidding.global.exception.ApiResponse;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.net.URI;
 import java.util.List;
 
+@Tag(name = "경매방", description = "경매방 CRUD API")
 @RestController
 @RequestMapping("/api/auction-rooms")
 @RequiredArgsConstructor
@@ -20,45 +21,46 @@ public class AuctionRoomController {
 
     private final AuctionRoomService auctionRoomService;
 
+    @Operation(summary = "경매방 생성")
     @PostMapping
-    public ResponseEntity<ApiResponse<AuctionRoomResponse>> create(@RequestBody AuctionRoomCreateRequest request) {
-        AuctionRoomResponse response = auctionRoomService.create(request);
-        return ResponseEntity
-                .created(URI.create("/api/auction-rooms/" + response.id()))
-                .body(ApiResponse.success(response));
+    public AuctionRoomResponse create(@RequestBody AuctionRoomCreateRequest request) {
+        return auctionRoomService.create(request);
     }
 
+    @Operation(summary = "경매방 목록 조회", description = "status 파라미터로 필터링 가능 (SCHEDULED / ACTIVE / ENDED / CANCELLED)")
     @GetMapping
-    public ResponseEntity<ApiResponse<List<AuctionRoomResponse>>> findAll(
-            @RequestParam(required = false) AuctionStatus status) {
-        List<AuctionRoomResponse> result = status != null
+    public List<AuctionRoomResponse> findAll(
+            @Parameter(description = "경매 상태 필터") @RequestParam(required = false, name = "status") AuctionStatus status) {
+        return status != null
                 ? auctionRoomService.findByStatus(status)
                 : auctionRoomService.findAll();
-        return ResponseEntity.ok(ApiResponse.success(result));
     }
 
+    @Operation(summary = "경매방 단건 조회")
     @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse<AuctionRoomResponse>> findById(@PathVariable Long id) {
-        return ResponseEntity.ok(ApiResponse.success(auctionRoomService.findById(id)));
+    public AuctionRoomResponse findById(@PathVariable(name = "id") Long id) {
+        return auctionRoomService.findById(id);
     }
 
+    @Operation(summary = "경매방 수정")
     @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse<AuctionRoomResponse>> update(
-            @PathVariable Long id,
+    public AuctionRoomResponse update(
+            @PathVariable(name = "id") Long id,
             @RequestBody AuctionRoomUpdateRequest request) {
-        return ResponseEntity.ok(ApiResponse.success(auctionRoomService.update(id, request)));
+        return auctionRoomService.update(id, request);
     }
 
+    @Operation(summary = "경매방 상태 변경")
     @PatchMapping("/{id}/status")
-    public ResponseEntity<ApiResponse<AuctionRoomResponse>> changeStatus(
-            @PathVariable Long id,
-            @RequestParam AuctionStatus status) {
-        return ResponseEntity.ok(ApiResponse.success(auctionRoomService.changeStatus(id, status)));
+    public AuctionRoomResponse changeStatus(
+            @PathVariable(name = "id") Long id,
+            @Parameter(description = "변경할 상태 (SCHEDULED / ACTIVE / ENDED / CANCELLED)") @RequestParam AuctionStatus status) {
+        return auctionRoomService.changeStatus(id, status);
     }
 
+    @Operation(summary = "경매방 삭제")
     @DeleteMapping("/{id}")
-    public ResponseEntity<ApiResponse<Void>> delete(@PathVariable Long id) {
+    public void delete(@PathVariable(name = "id") Long id) {
         auctionRoomService.delete(id);
-        return ResponseEntity.ok(ApiResponse.success(null));
     }
 }
