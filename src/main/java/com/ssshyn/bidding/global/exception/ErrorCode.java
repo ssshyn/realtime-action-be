@@ -8,11 +8,12 @@ import lombok.RequiredArgsConstructor;
 public enum ErrorCode {
 
     /**
-     * 경매방 에러
+     * 경매 에러
      */
     AUCTION_ROOM_NOT_FOUND(404, "AU001", "존재하지 않는 경매방입니다."),
     AUCTION_ROOM_ALREADY_ENDED(400, "AU002", "이미 종료된 경매방입니다."),
     AUCTION_ROOM_NOT_ACTIVE(400, "AU003", "진행 중인 경매방이 아닙니다."),
+    NOT_HIGHEST_PRICE(400, "AU004", "최고가 이상 금액만 입찰 가능합니다."),
 
     /**
      * Bad Request
@@ -31,8 +32,10 @@ public enum ErrorCode {
     /**
      * 유저 에러
      */
-    LOGIN_NOT_ACCESS(403, "U0001", "로그인이 필요한 서비스입니다. 로그인을 해주세요."),
-    USER_NOT_FOUND(401, "U0002", "존재하지 않는 유저입니다."),
+    LOGIN_ID_DUPLICATED(400, "U0001", "이미 사용중인 아이디입니다."),
+    LOGIN_FAILED(401, "U0002", "아이디 또는 비밀번호가 올바르지 않습니다."),
+    LOGIN_NOT_ACCESS(403, "U0003", "로그인이 필요한 서비스입니다. 로그인을 해주세요."),
+    USER_NOT_FOUND(404, "U0004", "존재하지 않는 유저입니다."),
     PERMISSION_DENIED(403, "U0003", "권한이 없습니다."),
     USER_ALREADY_DEACTIVATED(400, "U0004", "이미 탈퇴 처리된 계정입니다."),
     USER_ACCOUNT_EXPIRED(400, "U0005", "탈퇴 후 30일이 지나 계정이 영구 삭제되었습니다."),

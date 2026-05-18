@@ -20,7 +20,9 @@ public class AuctionRoomMapper {
                 room.getStartAt(),
                 room.getEndAt(),
                 room.getCreatedAt(),
-                room.getUpdatedAt()
+                room.getCreatedBy(),
+                room.getUpdatedAt(),
+                room.getUpdatedBy()
         );
     }
 

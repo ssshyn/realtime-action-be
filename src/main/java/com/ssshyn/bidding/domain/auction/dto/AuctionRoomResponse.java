@@ -14,5 +14,7 @@ public record AuctionRoomResponse(
         LocalDateTime startAt,
         LocalDateTime endAt,
         LocalDateTime createdAt,
-        LocalDateTime updatedAt
+        String createdBy,
+        LocalDateTime updatedAt,
+        String updatedBy
 ) {}

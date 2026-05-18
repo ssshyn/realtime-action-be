@@ -25,3 +25,8 @@ spring:
     properties:
       hibernate:
         format_sql: true
+
+jwt:
+  secret: bidding-service-secret-key-must-be-at-least-256-bits-long-for-hs256
+  access-token-expiration: 1800000    # 30분
+  refresh-token-expiration: 604800000 # 7일

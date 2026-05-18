@@ -63,4 +63,11 @@ public class AuctionRoomController {
     public void delete(@PathVariable(name = "id") Long id) {
         auctionRoomService.delete(id);
     }
+
+    @Operation(summary = "경매 입찰")
+    @PostMapping("/{id}/bid")
+    public void bid(@PathVariable(name = "id") Long id,
+                    @Parameter(description = "입찰 금액") Long bidPrice) {
+
+    }
 }

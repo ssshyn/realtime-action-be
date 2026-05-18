@@ -66,6 +66,11 @@ public class AuctionRoomService {
         auctionRoomRepository.delete(getRoom(id));
     }
 
+    @Transactional
+    public void bid(Long id, Long bidPrice) {
+
+    }
+
     private AuctionRoom getRoom(Long id) {
         return auctionRoomRepository.findById(id)
                 .orElseThrow(() -> new ErrorException(ErrorCode.AUCTION_ROOM_NOT_FOUND));
