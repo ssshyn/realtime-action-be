@@ -1,0 +1,27 @@
+import http from 'k6/http';
+
+const TOKEN =
+  'eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0ZSIsInJvbGUiOiJST0xFX1VTRVIiLCJpYXQiOjE3NzkxNjk5NzksImV4cCI6MTc3OTE3MTc3OX0.Ntv2ygdt3FZYVUpjDr9hK-c3j9TARvxJx_dMH4HP1y2lgm-1l_bUEH6WKE2W28Wo57wyPc9Tf6M2NiliINYdsg';
+
+export const options = {
+  vus: 100,
+  duration: '5s',
+};
+
+export default function () {
+  // 1001, 1002, 1003 중 랜덤 선택
+    const prices = [1001, 1002, 1003];
+    const bidPrice = prices[Math.floor(Math.random() * prices.length)];
+
+  const url =
+    `http://localhost:8080/api/auction-rooms/1/bid?bidPrice=${bidPrice}`;
+
+  const params = {
+    headers: {
+      Authorization: `Bearer ${TOKEN}`,
+      'Content-Type': 'application/json',
+    },
+  };
+
+  http.post(url, null, params);
+}
