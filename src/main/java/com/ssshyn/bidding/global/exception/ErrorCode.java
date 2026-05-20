@@ -56,15 +56,11 @@ public enum ErrorCode {
     AUTHENTICATION_FAILED(401, "A0010", "인증에 실패하였습니다."),
 
     /**
-     * 앱 버전 조회 에러
-     */
-    NO_APP_VERSION_DATA(400, "V0001", "데이터가 존재하지 않습니다."),
-
-    /**
      * 서버 에러
      */
     INVALID_DATA_FORMAT(400, "SY001", "잘못된 요청 데이터입니다."),
-    SERVER_ERROR(500, "SY002", "알 수 없는 에러가 발생했습니다. 서버에 문의해 주세요.");
+    SERVER_ERROR(500, "SY002", "알 수 없는 에러가 발생했습니다. 서버에 문의해 주세요."),
+    LOCK_ACQUISITION_FAILED(500, "SY003", "현재 다른 요청 처리 중입니다. 잠시 후 다시 시도해 주세요.");
 
     private final int status;
     private final String code;

@@ -14,11 +14,14 @@ import com.ssshyn.bidding.domain.auction.repository.BidRepository;
 import com.ssshyn.bidding.global.exception.ErrorCode;
 import com.ssshyn.bidding.global.exception.ErrorException;
 import lombok.RequiredArgsConstructor;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @RequiredArgsConstructor
@@ -28,8 +31,10 @@ public class AuctionRoomService {
     private final AuctionRoomRepository auctionRoomRepository;
     private final BidRepository bidRepository;
     private final RedisTemplate<String, Object> redisTemplate;
+    private final RedissonClient redissonClient;
 
     private static final String AUCTION_HIGHEST_PREFIX = "auction:highest";
+    private static final String AUCTION_LOCK_PREFIX = "auction:lock:";
 
     @Transactional
     public AuctionRoomResponse create(AuctionRoomCreateRequest request) {
@@ -76,20 +81,52 @@ public class AuctionRoomService {
 
     @Transactional
     public void bid(Long id, Long bidPrice) {
-        AuctionRoom room = getRoom(id);
+        // Redisson Lock key
+        String lockKey = AUCTION_LOCK_PREFIX + id;
 
-        // 입찰가가 최고가보다 높아야 성립됨
-        if (room.getCurrentPrice() > bidPrice) {
-            throw new ErrorException(ErrorCode.NOT_HIGHEST_PRICE);
+        RLock lock = redissonClient.getLock(lockKey);
+
+        try {
+            boolean available =
+                    lock.tryLock(3, 5, TimeUnit.SECONDS);
+
+            if (!available) {
+                throw new ErrorException(ErrorCode.LOCK_ACQUISITION_FAILED);
+            }
+
+            AuctionRoom room = getRoom(id);
+            String redisKey = AUCTION_HIGHEST_PREFIX + id;
+
+            // 입찰가가 최고가보다 높아야 성립됨
+            Object highest = redisTemplate.opsForValue().get(redisKey);
+
+            if (highest != null) {
+                Long highestPrice = Long.valueOf(highest.toString());
+                if (highestPrice > bidPrice) {
+                    throw new ErrorException(ErrorCode.NOT_HIGHEST_PRICE);
+                }
+            }
+
+            // bid 엔티티 생성
+            Bid bid = BidFactory.from(room, bidPrice);
+            bidRepository.save(bid);
+
+            // 최고가 업데이트
+            room.updateHighestBid(bid);
+            auctionRoomRepository.save(room);
+
+            // redis 최고가 갱신
+            redisTemplate.opsForValue().set(
+                    AUCTION_HIGHEST_PREFIX + id,
+                    bidPrice
+            );
+        } catch (InterruptedException e) {
+            throw new ErrorException(ErrorCode.SERVER_ERROR);
+        } finally {
+            if (lock.isHeldByCurrentThread()) {
+                lock.unlock();
+            }
         }
-
-        // bid 엔티티 생성
-        Bid bid = BidFactory.from(room, bidPrice);
-        bidRepository.save(bid);
-
-        // 최고가 업데이트
-        room.updateHighestBid(bid);
-        auctionRoomRepository.save(room);
     }
 
     private AuctionRoom getRoom(Long id) {
