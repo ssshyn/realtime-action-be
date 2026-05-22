@@ -13,6 +13,9 @@ import com.ssshyn.bidding.domain.auction.repository.AuctionRoomRepository;
 import com.ssshyn.bidding.domain.auction.repository.BidRepository;
 import com.ssshyn.bidding.global.exception.ErrorCode;
 import com.ssshyn.bidding.global.exception.ErrorException;
+import com.ssshyn.bidding.global.websocket.MessageType;
+import com.ssshyn.bidding.global.websocket.WebSocketMessage;
+import com.ssshyn.bidding.global.websocket.WebSocketPublisher;
 import lombok.RequiredArgsConstructor;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
@@ -32,6 +35,7 @@ public class AuctionRoomService {
     private final BidRepository bidRepository;
     private final RedisTemplate<String, Object> redisTemplate;
     private final RedissonClient redissonClient;
+    private final WebSocketPublisher webSocketPublisher;
 
     private static final String AUCTION_HIGHEST_PREFIX = "auction:highest";
     private static final String AUCTION_LOCK_PREFIX = "auction:lock:";
@@ -120,6 +124,11 @@ public class AuctionRoomService {
                     AUCTION_HIGHEST_PREFIX + id,
                     bidPrice
             );
+
+            // 입찰성공 webSocket
+            webSocketPublisher.publishToAuction(id,
+                    WebSocketMessage.of(MessageType.BID_UPDATED,
+                            AuctionRoomMapper.toResponse(room)));
         } catch (InterruptedException e) {
             throw new ErrorException(ErrorCode.SERVER_ERROR);
         } finally {
