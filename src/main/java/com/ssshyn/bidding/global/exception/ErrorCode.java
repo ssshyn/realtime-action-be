@@ -36,9 +36,9 @@ public enum ErrorCode {
     LOGIN_FAILED(401, "U0002", "아이디 또는 비밀번호가 올바르지 않습니다."),
     LOGIN_NOT_ACCESS(403, "U0003", "로그인이 필요한 서비스입니다. 로그인을 해주세요."),
     USER_NOT_FOUND(404, "U0004", "존재하지 않는 유저입니다."),
-    PERMISSION_DENIED(403, "U0003", "권한이 없습니다."),
-    USER_ALREADY_DEACTIVATED(400, "U0004", "이미 탈퇴 처리된 계정입니다."),
-    USER_ACCOUNT_EXPIRED(400, "U0005", "탈퇴 후 30일이 지나 계정이 영구 삭제되었습니다."),
+    PERMISSION_DENIED(403, "U0005", "권한이 없습니다."),
+    USER_ALREADY_DEACTIVATED(400, "U0006", "이미 탈퇴 처리된 계정입니다."),
+    USER_ACCOUNT_EXPIRED(400, "U0007", "탈퇴 후 30일이 지나 계정이 영구 삭제되었습니다."),
 
     /**
      * 인증 에러
@@ -46,13 +46,12 @@ public enum ErrorCode {
     NO_TOKEN(400, "A0001", "토큰이 존재하지 않습니다."),
     NOT_MATCH_CATEGORY(400, "A0002", "잘못된 유형의 토큰입니다."),
     TOKEN_EXPIRED(403, "A0003", "만료된 토큰입니다."),
-    ACCESS_TOKEN_EXPIRED(403, "A004", "만료된 엑세스 토큰입니다."),
-    TOKEN_NOT_EXPIRED(403, "A0005", "아직 토큰이 만료되지 않았습니다."),
-    INVALID_TOKEN(401, "A0006", "유효하지 않은 토큰입니다."),
-    UNAUTHENTICATED_USER(401, "A0007", "인증정보가 등록되지 않았습니다. 서버에 문의해 주세요."),
-    FAIL_CREATE_REVOKE_TOKEN(500, "A0008", "revoke Token 생성에 실패했습니다."),
-    INVALID_REFRESH_TOKEN(401, "A0009", "유효하지 않은 refresh token입니다. 재로그인 해 주세요."),
-    KEY_PARSING_ERROR(401, "A0010", "인증 키 파싱 중 오류가 발생하였습니다."),
+    TOKEN_NOT_EXPIRED(403, "A0004", "아직 토큰이 만료되지 않았습니다."),
+    INVALID_TOKEN(401, "A0005", "유효하지 않은 토큰입니다."),
+    UNAUTHENTICATED_USER(401, "A0006", "인증정보가 등록되지 않았습니다. 서버에 문의해 주세요."),
+    FAIL_CREATE_REVOKE_TOKEN(500, "A0007", "revoke Token 생성에 실패했습니다."),
+    INVALID_REFRESH_TOKEN(401, "A0008", "유효하지 않은 refresh token입니다. 재로그인 해 주세요."),
+    KEY_PARSING_ERROR(401, "A009", "인증 키 파싱 중 오류가 발생하였습니다."),
     AUTHENTICATION_FAILED(401, "A0010", "인증에 실패하였습니다."),
 
     /**
